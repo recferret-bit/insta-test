@@ -1,0 +1,20 @@
+{
+  "name": "insta-test",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted Instagram-like photo & video sharing app (spec-first monorepo)",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "validate:specs": "node .agents/skills/spec-architect/scripts/validate-specs.mjs --root . --json",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
