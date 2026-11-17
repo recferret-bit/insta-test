@@ -1,0 +1,35 @@
+.avatar {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  background: var(--color-surface);
+}
+
+.avatar--ring-unseen,
+.avatar--ring-seen {
+  padding: 3px;
+}
+
+.avatar--ring-unseen {
+  background: var(--gradient-story);
+}
+
+.avatar--ring-seen {
+  background: var(--color-border);
+}
+
+/* Gap between ring and photo uses the page background. */
+.avatar--ring-unseen .avatar__img,
+.avatar--ring-seen .avatar__img {
+  border: 2px solid var(--color-bg);
+}

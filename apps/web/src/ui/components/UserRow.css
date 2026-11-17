@@ -1,0 +1,44 @@
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+}
+
+.user-row__link {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+  color: inherit;
+  border-radius: var(--radius-sm);
+}
+
+.user-row__link:hover {
+  text-decoration: none;
+}
+
+.user-row__text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.user-row__username {
+  font-weight: var(--weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-row__subtitle {
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-row__action {
+  flex: none;
+}

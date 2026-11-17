@@ -1,0 +1,94 @@
+/* Design tokens — docs/specs/frontend/03-design-system.md#design-tokens-appswebsrcstylestokenscss (F-FE-11).
+   Spec tokens first (verbatim values); the "derived" block adds a few helpers built only from spec values. */
+:root {
+  color-scheme: light;
+
+  /* color — light */
+  --color-bg: #ffffff;
+  --color-surface: #fafafa;
+  --color-surface-raised: #ffffff;
+  --color-border: #e5e7eb;
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+  --color-accent: #6d28d9; /* buttons, links */
+  --color-accent-contrast: #ffffff;
+  --color-like: #e11d48;
+  --color-danger: #dc2626;
+  --color-focus: #2563eb;
+  --gradient-story: conic-gradient(from 210deg, #f59e0b, #ec4899, #8b5cf6, #f59e0b);
+
+  /* type */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* spacing (4px grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* shape & elevation */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.1);
+  --shadow-modal: 0 20px 50px rgb(0 0 0 / 0.25);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+
+  /* derived (layout & helpers) */
+  --color-overlay: rgb(0 0 0 / 0.55);
+  --color-skeleton: var(--color-border);
+  --color-hover: rgb(0 0 0 / 0.04);
+  --color-danger-text: var(--color-danger); /* dark override keeps error text ≥ 4.5:1 */
+  --content-narrow: 630px; /* feed, post */
+  --content-wide: 935px; /* profile, explore */
+  --sidebar-compact: 73px; /* md: icon-only */
+  --sidebar-full: 245px; /* lg: with labels */
+  --topbar-height: 56px;
+  --tabbar-height: 56px;
+}
+
+/* dark: explicit toggle, or OS preference unless the user forced light */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0b0b0f;
+  --color-surface: #121218;
+  --color-surface-raised: #1a1a22;
+  --color-border: #2a2a35;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-accent: #a78bfa;
+  --color-accent-contrast: #0b0b0f;
+  --color-hover: rgb(255 255 255 / 0.06);
+  --color-danger-text: #f87171;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #0b0b0f;
+    --color-surface: #121218;
+    --color-surface-raised: #1a1a22;
+    --color-border: #2a2a35;
+    --color-text: #f3f4f6;
+    --color-text-muted: #9ca3af;
+    --color-accent: #a78bfa;
+    --color-accent-contrast: #0b0b0f;
+    --color-hover: rgb(255 255 255 / 0.06);
+    --color-danger-text: #f87171;
+  }
+}

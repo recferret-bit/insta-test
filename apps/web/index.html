@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Insta-test — share photos and short videos with the people you follow."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Insta-test</title>
+    <!-- Applies the stored theme before first paint (external file: CSP forbids inline scripts). -->
+    <script src="/theme-init.js"></script>
+    <!-- Runtime config (F-FE-12): generated from PUBLIC_API_URL at container start by nginx/30-runtime-config.sh. -->
+    <script src="/config.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
