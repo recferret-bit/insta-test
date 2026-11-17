@@ -1,0 +1,137 @@
+# CI gates (F-INFRA-06) — docs/specs/infra/02-env-ci-and-probes.md#ci-gates-githubworkflowsciyml
+# Every job is a required check for merging.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  checks:
+    name: Specs, lint, typecheck, unit, build, grep gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      # Gate 1
+      - name: npm ci
+        run: npm ci
+      # Gate 2
+      - name: Validate specs (valid=true)
+        run: npm run validate:specs
+      # Gate 3
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      # Gate 4
+      - name: Unit tests
+        run: npm test
+      # Gate 6
+      - name: Build
+        run: npm run build
+      # Gate 9 — F-ECOMM-12: no outbound HTTP from the API
+      - name: Grep gate — no outbound HTTP in apps/api/src
+        run: |
+          if grep -rnE '\bfetch\(|\bhttps?\.(request|get)\(' apps/api/src; then
+            echo "::error::Outbound HTTP call found in apps/api/src (F-ECOMM-12)"
+            exit 1
+          fi
+          echo "No outbound HTTP calls in apps/api/src"
+
+  integration:
+    name: Integration (PostgreSQL 16)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: insta_test
+          POSTGRES_USER: insta
+          POSTGRES_PASSWORD: ci-ephemeral
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U insta -d insta_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgres://insta:ci-ephemeral@localhost:5432/insta_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      # Gate 5
+      - name: Integration tests
+        run: npm run test:integration
+
+  compose-e2e:
+    name: Compose smoke + e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      COMPOSE_PROJECT_NAME: insta-ci-${{ github.run_id }}
+      PUBLIC_URL: http://localhost:18000
+      PUBLIC_API_URL: http://localhost:18001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Write ephemeral .env
+        run: |
+          {
+            echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}"
+            echo "WAVE_PORT_BASE=18000"
+            echo "WEB_HOST_PORT=18000"
+            echo "API_HOST_PORT=18001"
+            echo "PUBLIC_URL=${PUBLIC_URL}"
+            echo "PUBLIC_API_URL=${PUBLIC_API_URL}"
+            echo "CORS_ORIGIN=${PUBLIC_URL}"
+            echo "POSTGRES_PASSWORD=$(openssl rand -hex 24)"
+            echo "GIT_SHA=${GITHUB_SHA}"
+          } > .env
+      # Gate 7
+      - name: Compose up (--wait for healthy)
+        run: docker compose up -d --build --wait --wait-timeout 300
+      - name: Smoke — API readiness and web liveness
+        run: |
+          curl -fsS "${PUBLIC_API_URL}/api/v1/health"
+          echo
+          curl -fsS "${PUBLIC_URL}/healthz"
+          echo
+      # Gate 8 — Playwright specs arrive in w07 (apps/web/e2e/); until then "no tests" passes.
+      - name: npm ci
+        run: npm ci
+      - name: Install Playwright browser
+        run: npx -w apps/web playwright install --with-deps chromium
+      - name: E2E (Playwright)
+        run: npm run e2e -w apps/web -- --pass-with-no-tests
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Compose down
+        if: always()
+        run: docker compose down -v --remove-orphans
