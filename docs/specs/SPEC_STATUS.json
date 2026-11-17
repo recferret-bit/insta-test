@@ -1,0 +1,267 @@
+{
+  "valid": true,
+  "validation_errors": [],
+  "root_index": "docs/specs/README.md",
+  "agents_md": true,
+  "claude_md": true,
+  "skills_scaffolded": true,
+  "categories": [
+    {
+      "category": "specs",
+      "applicable": true,
+      "files": [
+        "docs/specs/specs/01-project-structure.md",
+        "docs/specs/specs/02-architecture-and-patterns.md",
+        "docs/specs/specs/03-domain-and-entity-map.md",
+        "docs/specs/specs/04-decisions-and-invariants.md",
+        "docs/specs/specs/README.md"
+      ],
+      "entities": [
+        "ENT-Comment",
+        "ENT-Follow",
+        "ENT-Like",
+        "ENT-Media",
+        "ENT-Notification",
+        "ENT-Post",
+        "ENT-Session",
+        "ENT-Story",
+        "ENT-StoryView",
+        "ENT-User"
+      ],
+      "feature_ids": [
+        "F-CORE-01",
+        "F-CORE-02",
+        "F-CORE-03",
+        "F-CORE-04",
+        "F-CORE-05"
+      ]
+    },
+    {
+      "category": "frontend",
+      "applicable": true,
+      "files": [
+        "docs/specs/frontend/01-app-shell-and-routing.md",
+        "docs/specs/frontend/02-state-viewmodels-and-mappers.md",
+        "docs/specs/frontend/03-design-system.md",
+        "docs/specs/frontend/README.md"
+      ],
+      "entities": [],
+      "feature_ids": [
+        "F-FE-01",
+        "F-FE-02",
+        "F-FE-03",
+        "F-FE-04",
+        "F-FE-05",
+        "F-FE-06",
+        "F-FE-07",
+        "F-FE-08",
+        "F-FE-09",
+        "F-FE-10",
+        "F-FE-11",
+        "F-FE-12"
+      ]
+    },
+    {
+      "category": "backend",
+      "applicable": true,
+      "files": [
+        "docs/specs/backend/01-business-entities.md",
+        "docs/specs/backend/02-services-and-use-cases.md",
+        "docs/specs/backend/03-ports-and-handlers.md",
+        "docs/specs/backend/README.md"
+      ],
+      "entities": [],
+      "feature_ids": [
+        "F-BE-01",
+        "F-BE-02",
+        "F-BE-03",
+        "F-BE-04",
+        "F-BE-05",
+        "F-BE-06",
+        "F-BE-07",
+        "F-BE-08",
+        "F-BE-09",
+        "F-BE-10",
+        "F-CORE-02"
+      ]
+    },
+    {
+      "category": "persistence",
+      "applicable": true,
+      "files": [
+        "docs/specs/persistence/01-schema.md",
+        "docs/specs/persistence/02-migrations-and-indexes.md",
+        "docs/specs/persistence/03-row-mappers.md",
+        "docs/specs/persistence/README.md"
+      ],
+      "entities": [
+        "ENT-Comment",
+        "ENT-Follow",
+        "ENT-Like",
+        "ENT-Media",
+        "ENT-Notification",
+        "ENT-Post",
+        "ENT-Session",
+        "ENT-Story",
+        "ENT-StoryView",
+        "ENT-User"
+      ],
+      "feature_ids": [
+        "F-DB-01",
+        "F-DB-02",
+        "F-DB-03",
+        "F-DB-04",
+        "F-DB-05"
+      ]
+    },
+    {
+      "category": "internal-communication",
+      "applicable": true,
+      "files": [
+        "docs/specs/internal-communication/01-shared-contracts.md",
+        "docs/specs/internal-communication/02-domain-events-and-sse.md",
+        "docs/specs/internal-communication/README.md"
+      ],
+      "entities": [
+        "ENT-Notification"
+      ],
+      "feature_ids": [
+        "F-ICOMM-01",
+        "F-ICOMM-02",
+        "F-ICOMM-03",
+        "F-ICOMM-04",
+        "F-ICOMM-05"
+      ]
+    },
+    {
+      "category": "external-communication",
+      "applicable": true,
+      "files": [
+        "docs/specs/external-communication/01-api-conventions.md",
+        "docs/specs/external-communication/02-auth-and-users-api.md",
+        "docs/specs/external-communication/03-media-and-posts-api.md",
+        "docs/specs/external-communication/04-social-api.md",
+        "docs/specs/external-communication/05-stories-api.md",
+        "docs/specs/external-communication/06-feed-search-notifications-api.md",
+        "docs/specs/external-communication/07-third-party-integrations.md",
+        "docs/specs/external-communication/README.md"
+      ],
+      "entities": [
+        "ENT-Comment",
+        "ENT-Follow",
+        "ENT-Like",
+        "ENT-Media",
+        "ENT-Notification",
+        "ENT-Post",
+        "ENT-Session",
+        "ENT-Story",
+        "ENT-StoryView",
+        "ENT-User"
+      ],
+      "feature_ids": [
+        "F-ECOMM-01",
+        "F-ECOMM-02",
+        "F-ECOMM-03",
+        "F-ECOMM-04",
+        "F-ECOMM-05",
+        "F-ECOMM-06",
+        "F-ECOMM-07",
+        "F-ECOMM-08",
+        "F-ECOMM-09",
+        "F-ECOMM-10",
+        "F-ECOMM-11",
+        "F-ECOMM-12"
+      ]
+    },
+    {
+      "category": "infra",
+      "applicable": true,
+      "files": [
+        "docs/specs/infra/01-docker-compose.md",
+        "docs/specs/infra/02-env-ci-and-probes.md",
+        "docs/specs/infra/README.md"
+      ],
+      "entities": [],
+      "feature_ids": [
+        "F-ECOMM-12",
+        "F-INFRA-01",
+        "F-INFRA-02",
+        "F-INFRA-03",
+        "F-INFRA-04",
+        "F-INFRA-05",
+        "F-INFRA-06",
+        "F-INFRA-07"
+      ]
+    }
+  ],
+  "feature_ids": [
+    "F-BE-01",
+    "F-BE-02",
+    "F-BE-03",
+    "F-BE-04",
+    "F-BE-05",
+    "F-BE-06",
+    "F-BE-07",
+    "F-BE-08",
+    "F-BE-09",
+    "F-BE-10",
+    "F-CORE-01",
+    "F-CORE-02",
+    "F-CORE-03",
+    "F-CORE-04",
+    "F-CORE-05",
+    "F-DB-01",
+    "F-DB-02",
+    "F-DB-03",
+    "F-DB-04",
+    "F-DB-05",
+    "F-ECOMM-01",
+    "F-ECOMM-02",
+    "F-ECOMM-03",
+    "F-ECOMM-04",
+    "F-ECOMM-05",
+    "F-ECOMM-06",
+    "F-ECOMM-07",
+    "F-ECOMM-08",
+    "F-ECOMM-09",
+    "F-ECOMM-10",
+    "F-ECOMM-11",
+    "F-ECOMM-12",
+    "F-FE-01",
+    "F-FE-02",
+    "F-FE-03",
+    "F-FE-04",
+    "F-FE-05",
+    "F-FE-06",
+    "F-FE-07",
+    "F-FE-08",
+    "F-FE-09",
+    "F-FE-10",
+    "F-FE-11",
+    "F-FE-12",
+    "F-ICOMM-01",
+    "F-ICOMM-02",
+    "F-ICOMM-03",
+    "F-ICOMM-04",
+    "F-ICOMM-05",
+    "F-INFRA-01",
+    "F-INFRA-02",
+    "F-INFRA-03",
+    "F-INFRA-04",
+    "F-INFRA-05",
+    "F-INFRA-06",
+    "F-INFRA-07"
+  ],
+  "entity_ids": [
+    "ENT-Comment",
+    "ENT-Follow",
+    "ENT-Like",
+    "ENT-Media",
+    "ENT-Notification",
+    "ENT-Post",
+    "ENT-Session",
+    "ENT-Story",
+    "ENT-StoryView",
+    "ENT-User"
+  ]
+}

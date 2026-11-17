@@ -68,7 +68,7 @@
           "kind": "contracts",
           "title": "Workspace tooling, @insta/contracts, schema v1 & domain kernel",
           "objective": "Create npm workspaces root (all package.json files + lockfile with the full toolchain-baseline dependency set), tsconfig.base.json, ESLint flat config with layer-boundary rules, Prettier; implement the complete packages/contracts package (ids, errors, pagination, limits, every dto/<module>.ts, events.ts); write apps/api/migrations/0001_init.sql with every table and index from persistence specs; create apps/api/src/domain/shared (ids, DomainError, ErrorCode copy, Clock, IdGenerator port, EventCollector, domain events union, Page/TimeCursor) and, for every module (identity, media, posts, social, stories, notifications, feed, search), ports.ts + *.entity.ts type declarations + views.ts read models + <name>.service.ts class skeletons with frozen constructor ports and method signatures (bodies throw), plus data/rows/<table-group>.row.ts for every table. Document the frozen file-naming conventions (route/repository/service file list, data/crypto) in docs/specs/specs/01-project-structure.md.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "package.json",
             "package-lock.json",
@@ -94,7 +94,7 @@
           "kind": "worker",
           "title": "API platform, composition root, stubs & test harness",
           "objective": "Implement config/env.ts (Zod env), data/db (pool, UnitOfWork with after-commit event publishing, migration runner with checksums + advisory lock), InProcessEventBus, data/crypto (argon2id PasswordHasher, TokenGenerator, UUIDv7 IdGenerator), data/storage (LocalMediaStorage, MediaProbe), api/server.ts (Fastify, zod type provider, CORS, request id, no-store, pino redact, rate limits, central error handler), auth.plugin.ts with working bearer-session resolution (sessions.pg-repository findActiveByTokenHash + IdentityService.authenticate wiring), health routes (/healthz, /api/v1/health), api/routes/index.ts registering one stub plugin per route module (identity, media, posts, likes, comments, social, stories, feed, search, notifications, events), stub pg repositories for every port, api/sse stub (createSseHub), jobs/index.ts with media-cleanup and story-cleanup stub jobs + advisory-lock runner, main.ts wiring every service; test harness in apps/api/test/helpers (buildTestApp, resetDb with fresh migrations, SQL-level factories for every table, createAuthedUser token helper).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/main.ts",
             "apps/api/src/config",
@@ -118,7 +118,7 @@
           "kind": "worker",
           "title": "Web platform: app shell, design system, typed API client, session store",
           "objective": "Create the Vite/React SPA skeleton: config.ts (window.__APP_CONFIG__), styles/tokens.css + global.css (light/dark + manual toggle), design-system primitives in ui/components (Button, Input, Avatar with story ring, UserRow, Modal, Skeleton, EmptyState, Toast region, Icon), ui/layout (AppShell desktop sidebar + mobile top/bottom bars, RequireAuth/PublicOnly guards, route error boundary), App.tsx route table importing ui/pages/index.ts with a placeholder page file per route, the complete typed API client in src/api/* (http.ts + every per-module endpoint file incl. XHR upload with progress), state/session.ts (useSyncExternalStore + localStorage), state/queryClient + query keys, state/cache-patch helpers (patchPostInCaches), every DTO → ViewModel mapper in state/mappers/*, stub hooks state/notifications.ts and state/sse.ts used by the shell badge; nginx default.conf.template + 30-runtime-config.sh.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/index.html",
             "apps/web/vite.config.ts",
@@ -135,7 +135,7 @@
           "kind": "worker",
           "title": "Infra: Dockerfiles, compose stack, env catalog, CI",
           "objective": "Write multi-stage apps/api/Dockerfile and apps/web/Dockerfile, docker-compose.yml (web, api, internal db; health checks; WAVE_PORT_BASE-derived host ports; named volumes for pg data and media) and docker-compose.dev.yml (db host port), .dockerignore, complete .env.example, .github/workflows/ci.yml with every gate from infra/02 (e2e step wired but allowed to report 'no specs' until w07), README quick-start refresh. Verify two stacks with different COMPOSE_PROJECT_NAME/WAVE_PORT_BASE run side by side.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "docker-compose.yml",
             "docker-compose.dev.yml",
@@ -154,7 +154,7 @@
           "kind": "validate",
           "title": "Validate Wave 00 & author check guide",
           "objective": "Run wave-validate (2 iterations): spec validation, lint (layer rules), typecheck, unit + integration tests, build, compose smoke via wave-compose-deploy slot 0; record gaps in docs/questions-and-limitations/w00-gaps.md; write docs/plan/checks/w00-check.md and .yardos/waves/w00/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "package.json",
             "package-lock.json",
@@ -276,7 +276,7 @@
           "kind": "contracts",
           "title": "Freeze identity/media/notification entities, row mappers & VM mappers",
           "objective": "Confirm (or spec-first adjust) dto common/auth/users/media; implement User, Session, MediaAsset (assertAttachable/attach), Notification entity factories & value objects (Username, Email, Caption limits shared with contracts LIMITS); UserProfileView/UserSummaryView read models; Row <-> Entity mappers for users, sessions, media_assets, notifications with round-trip unit tests; web toUserSummaryVM/toProfileVM/toMeVM/toMediaVM unit tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/common.ts",
             "packages/contracts/src/dto/auth.ts",
@@ -309,7 +309,7 @@
           "kind": "worker",
           "title": "Identity & sessions API",
           "objective": "Implement IdentityService (register, login with dummy verify, logout, getMe, updateProfile with avatar attach, getProfile), users/sessions pg repositories (23505 -> USERNAME_TAKEN/EMAIL_TAKEN, getProfileView with is_following + has_active_story EXISTS), identity.routes.ts (POST /auth/signup, POST /auth/login, POST /auth/logout, GET /me, PATCH /me, GET /users/{username}) with identity DTO mappers; unit + integration tests (happy, 401, 400 per endpoint; contract-parse responses).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/identity/identity.service.ts",
             "apps/api/src/data/repositories/users.*",
@@ -327,7 +327,7 @@
           "kind": "worker",
           "title": "Media upload, serving & MediaCleanupJob",
           "objective": "Implement MediaService.upload (magic-byte sniff, streaming size limit, image dims probe, video duration/dims bounds, avatar must be image, file removed on insert failure), media pg repository (insert, findManyForUpdate, markAttached, deleteUnattachedOlderThan), media.routes.ts (POST /api/v1/media multipart, GET /media/* with correct Content-Type + immutable cache), media-cleanup.job.ts under advisory lock; unit + integration tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/media/media.service.ts",
             "apps/api/src/data/repositories/media.*",
@@ -345,7 +345,7 @@
           "kind": "worker",
           "title": "Notification persistence write side",
           "objective": "Implement NotificationRepository.insertIfAbsent (ON CONFLICT DO NOTHING against notifications_like_uq / notifications_follow_uq) and deleteFor(like|follow) in notifications.pg-repository.ts; leave list/getView/unreadCount/markReadUpTo as stubs for w06; integration tests for dedupe and deletion.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/data/repositories/notifications.*",
             "apps/api/test/integration/notifications-write"
@@ -358,7 +358,7 @@
           "kind": "worker",
           "title": "Web auth pages, edit profile & upload hook",
           "objective": "Implement LoginPage, SignupPage (inline VALIDATION_FAILED.details mapping, ?next redirect), logout flow clearing caches, me query hook, generic upload hook with progress (state/upload*), EditProfilePage (avatar upload purpose avatar, username, full name, bio with counters) and components AuthForm, AvatarUploader, UploadProgress; component + hook tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/src/ui/pages/LoginPage*",
             "apps/web/src/ui/pages/SignupPage*",
@@ -378,7 +378,7 @@
           "kind": "validate",
           "title": "Validate Wave 01 & author check guide",
           "objective": "Run wave-validate (2 iterations) incl. integration tests and compose preview on slot 1; record gaps in docs/questions-and-limitations/w01-gaps.md; write docs/plan/checks/w01-check.md and .yardos/waves/w01/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/common.ts",
             "packages/contracts/src/dto/auth.ts",
@@ -503,7 +503,7 @@
           "kind": "contracts",
           "title": "Freeze post/like/comment entities, row mappers & VM mappers",
           "objective": "Confirm dto posts/comments; implement Post aggregate (create with 1–10 contiguous media, editCaption with hashtag extraction regex, assertCanModify), Like, Comment (assertCanDelete per INV-10) and PostView/CommentView read models; Row <-> Entity mappers for posts/post_media/post_hashtags, post_likes, comments with round-trip tests; web toPostVM (captionTokens, relative time) and toCommentVM tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/posts.ts",
             "packages/contracts/src/dto/comments.ts",
@@ -529,7 +529,7 @@
           "kind": "worker",
           "title": "Posts API",
           "objective": "Implement PostService (createPost with media FOR UPDATE + attach + posts_count, editCaption, deletePost soft delete, getPost, listUserPosts), posts pg repository (insert rows, findLive, updateCaption, softDelete, adjustCounters, getView, listByAuthor with batched media/hashtags/author/viewer_has_liked query), posts.routes.ts (POST /posts, GET/PATCH/DELETE /posts/{id}, GET /users/{username}/posts); unit + integration tests using SQL-level factories.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/posts/post.service.ts",
             "apps/api/src/data/repositories/posts.*",
@@ -546,7 +546,7 @@
           "kind": "worker",
           "title": "Likes & comments API",
           "objective": "Implement LikeService (like/unlike idempotent, like_count, like notification create/delete, PostLiked/NotificationCreated/PostCountersChanged events), CommentService (addComment, deleteComment per INV-10, listComments ascending, comment notification), likes and comments pg repositories, likes.routes.ts (PUT/DELETE /posts/{id}/like, GET /posts/{id}/likes) and comments.routes.ts (GET/POST /posts/{id}/comments, DELETE /comments/{id}); unit tests with fake ports + integration tests (counter correctness, self-action creates no notification).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/posts/like.service.ts",
             "apps/api/src/domain/posts/comment.service.ts",
@@ -567,7 +567,7 @@
           "kind": "worker",
           "title": "Web post composer, post detail & post components",
           "objective": "Implement CreatePostPage (pick 1–10 files, client checks, reorder via drag + keyboard, caption counter 2200, parallel uploads max 3 with progress, publish), PostPage (MediaCarousel, optimistic LikeButton, comments infinite list + composer, author edit caption/delete), shared PostCard (double-tap like, linkified #tags/@mentions), PostGrid tiles (video/multi icons, hover counts), PostMenu, MediaPicker, CaptionText; hooks state/posts*, likes*, comments* with optimistic patchPostInCaches; tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/src/ui/pages/CreatePostPage*",
             "apps/web/src/ui/pages/PostPage*",
@@ -592,7 +592,7 @@
           "kind": "validate",
           "title": "Validate Wave 02 & author check guide",
           "objective": "Run wave-validate (2 iterations) incl. integration tests and compose preview on slot 2; record gaps in docs/questions-and-limitations/w02-gaps.md; write docs/plan/checks/w02-check.md and .yardos/waves/w02/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/posts.ts",
             "packages/contracts/src/dto/comments.ts",
@@ -685,7 +685,7 @@
           "kind": "contracts",
           "title": "Freeze follow entity, row mapper & follow DTOs",
           "objective": "Confirm FollowStateResponseDto / FollowListItemDto in dto/users.ts; implement Follow entity (self-follow -> CANNOT_FOLLOW_SELF), FollowState + relation views; FollowRow <-> Follow mappers with round-trip tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/users.ts",
             "apps/api/src/domain/social/*.entity.ts",
@@ -702,7 +702,7 @@
           "kind": "worker",
           "title": "Follows API",
           "objective": "Implement FollowService (follow/unfollow idempotent, both counters via UserRepository.adjustCounters locked ORDER BY id, follow notification create/delete via NotificationRepository, UserFollowed + NotificationCreated events, listFollowers/listFollowing), follows pg repository, social.routes.ts (PUT/DELETE /users/{username}/follow, GET /users/{username}/followers, GET /users/{username}/following); unit + integration tests incl. mutual-follow concurrency and is_following on GET /users/{username}.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/social/follow.service.ts",
             "apps/api/src/data/repositories/follows.*",
@@ -719,7 +719,7 @@
           "kind": "worker",
           "title": "Web follow button & follow lists",
           "objective": "Implement optimistic FollowButton (patches profile + user-summary caches, rollback on error), FollowListModal (routes /u/:username/followers|following, infinite list of UserRow with follow buttons), hooks state/follows*; tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/src/ui/components/FollowButton*",
             "apps/web/src/ui/components/FollowListModal*",
@@ -733,7 +733,7 @@
           "kind": "validate",
           "title": "Validate Wave 03 & author check guide",
           "objective": "Run wave-validate (2 iterations) incl. integration tests and compose preview on slot 3; record gaps in docs/questions-and-limitations/w03-gaps.md; write docs/plan/checks/w03-check.md and .yardos/waves/w03/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/users.ts",
             "apps/api/src/domain/social/*.entity.ts",
@@ -801,7 +801,7 @@
           "kind": "contracts",
           "title": "Freeze story entities, row mappers & VM mapper",
           "objective": "Confirm dto/stories.ts; implement Story (createdAt + 24h via Clock, isActive), StorySeen, StoryItemView/StoryTrayItem/StoryViewerView; StoryRow/StoryViewRow mappers with round-trip tests; web toStoryVM (durationMs image 5000 / video duration, remainingLabel) tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/stories.ts",
             "apps/api/src/domain/stories/*.entity.ts",
@@ -819,7 +819,7 @@
           "kind": "worker",
           "title": "Stories API & StoryCleanupJob",
           "objective": "Implement StoryService (createStory with media attach, deleteStory removing story + media row then file after commit, getTray, getUserStories, markSeen skipping author, listViewers author-only), stories pg repository incl. tray query and deleteExpiredBefore, stories.routes.ts (POST /stories, DELETE /stories/{id}, GET /stories/tray, GET /users/{username}/stories, POST /stories/{id}/seen, GET /stories/{id}/viewers), story-cleanup.job.ts under advisory lock; unit tests with fake Clock + integration tests (expiry invisibility INV-06).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/stories/story.service.ts",
             "apps/api/src/data/repositories/stories.*",
@@ -837,7 +837,7 @@
           "kind": "worker",
           "title": "Web story tray, viewer & story creation",
           "objective": "Implement StoryTray (own avatar first with '+', unseen first, gradient rings), StoryViewerPage (segmented progress, tap zones, arrow/Esc/space keys, hold to pause, auto-advance across tray users, mark seen on display, author 'Seen by N' + StoryViewers sheet), CreateStoryPage (upload purpose story + POST /stories), hooks state/stories*; tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/src/ui/pages/StoryViewerPage*",
             "apps/web/src/ui/pages/CreateStoryPage*",
@@ -854,7 +854,7 @@
           "kind": "validate",
           "title": "Validate Wave 04 & author check guide",
           "objective": "Run wave-validate (2 iterations) incl. integration tests and compose preview on slot 4; record gaps in docs/questions-and-limitations/w04-gaps.md; write docs/plan/checks/w04-check.md and .yardos/waves/w04/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/stories.ts",
             "apps/api/src/domain/stories/*.entity.ts",
@@ -935,7 +935,7 @@
           "kind": "contracts",
           "title": "Freeze search DTOs & feed/search read models",
           "objective": "Confirm dto/search.ts (UserSearchResponseDto, HashtagSearchResponseDto, HashtagPostsResponseDto); declare HashtagResult and hashtag-page read models in domain/search/views.ts and any feed read-model helpers in domain/feed/views.ts (FeedQueries/SearchQueries ports stay as frozen in w00); web search VM mappers + tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/search.ts",
             "apps/api/src/domain/feed/views.ts",
@@ -950,7 +950,7 @@
           "kind": "worker",
           "title": "Feed, explore & hashtag-post queries",
           "objective": "Implement FeedService (homeFeed, explore) and the feed pg query adapter (homeFeed per reference SQL, explore excluding viewer, byHashtag with post_count) with keyset cursors on (created_at, id) and batched PostView hydration; feed.routes.ts (GET /feed, GET /explore); unit + integration tests incl. cursor tamper -> 400 and EXPLAIN checks for posts_author_feed_idx / posts_recent_idx / post_hashtags_tag_idx.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/feed/feed.service.ts",
             "apps/api/src/data/repositories/feed.*",
@@ -967,7 +967,7 @@
           "kind": "worker",
           "title": "Search & hashtags API",
           "objective": "Implement SearchService (searchUsers ranked prefix / full-name word prefix / trigram >= 0.3 then followers_count, searchHashtags prefix ordered by post_count, hashtagPosts via FeedQueries.byHashtag port), search pg query adapter, search.routes.ts (GET /search/users, GET /search/hashtags, GET /hashtags/{tag}/posts); unit tests with fake ports + integration tests (hashtag post list integration runs once W05-02 is merged in validate).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/search/search.service.ts",
             "apps/api/src/data/repositories/search.*",
@@ -984,7 +984,7 @@
           "kind": "worker",
           "title": "Web home, explore, search, hashtag & profile pages",
           "objective": "Implement HomePage (StoryTray + FeedList infinite query with IntersectionObserver sentinel, skeletons, empty state linking Explore), ExplorePage and HashtagPage grids (PostGrid), SearchPage (SearchBox debounced 250 ms, user + hashtag results), ProfilePage (ProfileHeader with avatar story ring, compact counters, bio, FollowButton / Edit profile, post grid, nested FollowListModal routes), hooks state/feed*, search*, profile*; tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/src/ui/pages/HomePage*",
             "apps/web/src/ui/pages/ExplorePage*",
@@ -1007,7 +1007,7 @@
           "kind": "validate",
           "title": "Validate Wave 05 & author check guide",
           "objective": "Run wave-validate (2 iterations) incl. integration + EXPLAIN tests and compose preview on slot 5; record gaps in docs/questions-and-limitations/w05-gaps.md; write docs/plan/checks/w05-check.md and .yardos/waves/w05/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/search.ts",
             "apps/api/src/domain/feed/views.ts",
@@ -1088,7 +1088,7 @@
           "kind": "contracts",
           "title": "Freeze notification DTOs, SSE event schemas & read model",
           "objective": "Confirm dto/notifications.ts and the ServerEvent discriminated union in events.ts (notification.created, notification.unread_count, post.counters); declare NotificationView in domain/notifications/views.ts; web toNotificationVM + event safeParse helpers with tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/notifications.ts",
             "packages/contracts/src/events.ts",
@@ -1103,7 +1103,7 @@
           "kind": "worker",
           "title": "Notifications API",
           "objective": "Implement NotificationService (list excluding soft-deleted targets, unreadCount, markRead up_to_id by UUIDv7 order emitting NotificationsRead), read side of notifications pg repository (list with actor + post thumbnail + truncated comment text, getView, unreadCount, markReadUpTo), notifications.routes.ts (GET /notifications, GET /notifications/unread-count, POST /notifications/read); unit + integration tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/domain/notifications/notification.service.ts",
             "apps/api/src/data/repositories/notifications.*",
@@ -1120,7 +1120,7 @@
           "kind": "worker",
           "title": "SSE ticket, stream & hub",
           "objective": "Implement SseTicketStore (32-byte base64url, 60 s TTL, single use), SseHub (Map<UserId, Set<Connection>>, max 5 per user, retry 5000 + initial unread_count, ': ping' every 25 s, close on session revocation detected at heartbeat, close all on shutdown), event-bus subscriptions for NotificationCreated / NotificationsRead / PostCountersChanged, events.routes.ts (POST /events/ticket, GET /events/stream?ticket=) with ticket redaction; unit + integration tests (reused/expired ticket 401; like by A reaches B within 1 s).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/src/api/sse",
             "apps/api/src/api/routes/events.*",
@@ -1136,7 +1136,7 @@
           "kind": "worker",
           "title": "Web notifications page, live badge & SSE client",
           "objective": "Implement SSE connection manager (ticket fetch with backoff, EventSource, safeParse + drop invalid, dedupe by event id, on reconnect refetch unread count and invalidate notification queries, apply post.counters via patchPostInCaches), unread badge hook, NotificationToast, NotificationsPage (New vs Earlier groups, mark read with newest id on open), NotificationItem; tests.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/src/ui/pages/NotificationsPage*",
             "apps/web/src/ui/components/NotificationItem*",
@@ -1152,7 +1152,7 @@
           "kind": "validate",
           "title": "Validate Wave 06 & author check guide",
           "objective": "Run wave-validate (2 iterations) incl. SSE integration tests and compose preview on slot 6 (verify SSE through the compose network, no proxy buffering); record gaps in docs/questions-and-limitations/w06-gaps.md; write docs/plan/checks/w06-check.md and .yardos/waves/w06/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "packages/contracts/src/dto/notifications.ts",
             "packages/contracts/src/events.ts",
@@ -1213,7 +1213,7 @@
           "kind": "contracts",
           "title": "Spec reconciliation & final contract freeze",
           "objective": "Fold resolved per-wave gaps (w00–w06) back into docs/specs (spec-first), reconcile any contract drift in packages/contracts, add 0002_hardening.sql only if a confirmed index/constraint gap exists; run validate-specs until valid: true.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "docs/specs",
             "packages/contracts",
@@ -1227,7 +1227,7 @@
           "kind": "worker",
           "title": "Counter integrity, index coverage & architecture tests",
           "objective": "Add integration test running a randomized action sequence (posts, likes, comments, follows, deletes) then recomputing every counter from source rows (INV-05, F-DB-05); EXPLAIN tests on seeded data for feed, profile grid, comments, notifications and search (F-DB-03); contract-coverage test asserting every route's responses parse with @insta/contracts; unit architecture tests (domain import boundaries, DomainError codes == contracts ErrorCode, LIMITS parity, no outbound HTTP in apps/api/src).",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/api/test/integration/hardening",
             "apps/api/test/unit/architecture"
@@ -1240,7 +1240,7 @@
           "kind": "worker",
           "title": "Playwright e2e smoke & a11y gates in CI",
           "objective": "Add apps/web/playwright.config.ts and e2e specs: sign up -> upload -> post -> like -> comment -> follow (second user) -> story, against the compose stack; Lighthouse/axe a11y >= 90 on home, profile and post pages; extend .github/workflows/ci.yml compose-smoke + e2e jobs.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "apps/web/e2e",
             "apps/web/playwright.config.ts",
@@ -1254,7 +1254,7 @@
           "kind": "validate",
           "title": "Validate Wave 07 & final release check",
           "objective": "Run wave-validate (2 iterations): full CI gate list locally + compose preview on slot 7 with e2e; record gaps in docs/questions-and-limitations/w07-gaps.md; write docs/plan/checks/w07-check.md and .yardos/waves/w07/review-packet.json.",
-          "mode": "edit",
+          "mode": "exec",
           "owned_paths": [
             "docs/specs",
             "packages/contracts",

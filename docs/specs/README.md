@@ -49,6 +49,13 @@ All cross-layer entities (`ENT-*`) are defined in
 `ENT-User`, `ENT-Session`, `ENT-Media`, `ENT-Post`, `ENT-Comment`, `ENT-Like`, `ENT-Follow`,
 `ENT-Story`, `ENT-StoryView`, `ENT-Notification`.
 
+## Delivery Plan
+
+Waves `w00`–`w07`, their task `owned_paths` and dependency DAG are in
+[docs/plan/PRODUCT_WAVES.md](../plan/PRODUCT_WAVES.md) (machine-readable:
+[WAVE_MANIFEST.json](../plan/WAVE_MANIFEST.json)). The plan derives from these specs; specs win on conflict.
+Machine-readable validation status of this tree: [SPEC_STATUS.json](./SPEC_STATUS.json).
+
 ## Open Questions
 
 Known gaps and deferred scope live in

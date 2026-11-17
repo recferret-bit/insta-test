@@ -14,8 +14,9 @@ follows, likes, comments, search, 24-hour stories and live notifications. The wo
   at the same time in separate git worktrees and separate Docker Compose port blocks.
 - **Within a wave:** `WNN-01` (`contracts`) → parallel `worker` tasks with disjoint `owned_paths` → `WNN-K` (`validate`).
 
-Every task in the manifest uses `mode: "edit"`. Commands that a task brief lists (tests, lint, compose smoke,
-`wave-validate`) are run by the coordinator or validate stage. They are not run inside the task itself.
+Every task in the manifest uses `mode: "exec"`, because every task builds or tests: `contracts` tasks install the
+workspace, compile `@insta/contracts`, run mapper/VM unit tests or `validate-specs`; `worker` tasks run their unit and
+integration tests; `validate` tasks run `wave-validate`, lint, the test suites and the compose smoke check.
 
 ## Wave Overview
 
