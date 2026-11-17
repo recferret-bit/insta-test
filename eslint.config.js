@@ -64,6 +64,9 @@ export default tseslint.config(
       "import/no-restricted-paths": [
         "error",
         {
+          // Zones are relative to the repo root, not process.cwd(), so the rules still apply when
+          // ESLint runs from a workspace directory (IDE, `npx eslint` inside apps/api, vitest).
+          basePath: import.meta.dirname,
           zones: [
             // packages/contracts → nothing under apps/
             { target: "./packages/contracts", from: "./apps", message: "contracts may only import zod." },

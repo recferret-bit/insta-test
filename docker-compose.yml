@@ -20,6 +20,24 @@ services:
     networks: [internal]
     # no host ports: db is internal-only (docker-compose.dev.yml publishes DB_HOST_PORT for local dev)
 
+  # `web` is declared before `api` on purpose: wave-compose-deploy assigns host-port offsets in
+  # declaration order, so this keeps web at WAVE_PORT_BASE+0 and api at +1 (infra/01 port table).
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile }
+    depends_on:
+      api: { condition: service_healthy }
+    environment:
+      PUBLIC_URL: ${PUBLIC_URL}
+      PUBLIC_API_URL: ${PUBLIC_API_URL}
+    ports:
+      - "${WEB_HOST_PORT:-18000}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    networks: [edge]
+
   api:
     build: { context: ., dockerfile: apps/api/Dockerfile }
     depends_on:
@@ -48,22 +66,6 @@ services:
       start_period: 20s
       retries: 6
     networks: [internal, edge]
-
-  web:
-    build: { context: ., dockerfile: apps/web/Dockerfile }
-    depends_on:
-      api: { condition: service_healthy }
-    environment:
-      PUBLIC_URL: ${PUBLIC_URL}
-      PUBLIC_API_URL: ${PUBLIC_API_URL}
-    ports:
-      - "${WEB_HOST_PORT:-18000}:8080"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 6
-    networks: [edge]
 
 volumes:
   db-data:
