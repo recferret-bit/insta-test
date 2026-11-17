@@ -1,0 +1,50 @@
+# SPA server for the `web` container (F-INFRA-02, F-FE-12) — docs/specs/infra/01-docker-compose.md.
+# Rendered by the nginx image's envsubst step (/etc/nginx/templates → /etc/nginx/conf.d); only defined
+# environment variables (PUBLIC_API_URL) are substituted, nginx variables such as $uri are left intact.
+# nginx does not proxy API traffic: the browser calls PUBLIC_API_URL directly.
+
+# Cache policy by URI (evaluated after try_files, so SPA fallbacks resolve to /index.html).
+map $uri $insta_cache_control {
+    default        "no-cache";
+    ~^/assets/     "public, max-age=31536000, immutable";
+    /index.html    "no-store";
+    /config.js     "no-store";
+    /theme-init.js "no-cache";
+}
+
+server {
+    listen 8080;
+    listen [::]:8080;
+    server_name _;
+    server_tokens off;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+
+    # Headers live at server level only (a location-level add_header would drop them).
+    add_header Cache-Control $insta_cache_control always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' ${PUBLIC_API_URL} data: blob:; media-src 'self' ${PUBLIC_API_URL} blob:; connect-src 'self' ${PUBLIC_API_URL}" always;
+    add_header X-Content-Type-Options "nosniff" always;
+
+    # Liveness probe (compose healthcheck).
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 'ok';
+    }
+
+    # Fingerprinted build output: long-lived immutable cache; missing files are real 404s.
+    location /assets/ {
+        try_files $uri =404;
+    }
+
+    # SPA fallback: every unknown path renders the app shell; client-side router handles 404s.
+    location / {
+        try_files $uri /index.html;
+    }
+}

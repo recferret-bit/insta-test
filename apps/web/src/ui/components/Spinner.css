@@ -1,0 +1,19 @@
+.spinner-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.spinner {
+  display: inline-block;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spinner-rotate 0.7s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
