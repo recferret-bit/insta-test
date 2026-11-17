@@ -14,6 +14,9 @@ follows, likes, comments, search, 24-hour stories and live notifications. The wo
   at the same time in separate git worktrees and separate Docker Compose port blocks.
 - **Within a wave:** `WNN-01` (`contracts`) → parallel `worker` tasks with disjoint `owned_paths` → `WNN-K` (`validate`).
 
+Every task in the manifest uses `mode: "edit"`. Commands that a task brief lists (tests, lint, compose smoke,
+`wave-validate`) are run by the coordinator or validate stage. They are not run inside the task itself.
+
 ## Wave Overview
 
 | Wave | Slug | Depends on | Workers (parallel) | Scope summary |
