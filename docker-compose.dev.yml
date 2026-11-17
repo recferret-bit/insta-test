@@ -1,0 +1,9 @@
+# Local development override — docs/specs/infra/01-docker-compose.md#local-development-override-docker-composedevyml
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
+# Publishes db on DB_HOST_PORT (WAVE_PORT_BASE+2) so `npm run dev` on the host can reach it.
+# Never used for wave previews. `internal` networks cannot publish ports, so db also joins `edge` here.
+services:
+  db:
+    ports:
+      - "${DB_HOST_PORT:-18002}:5432"
+    networks: [internal, edge]
