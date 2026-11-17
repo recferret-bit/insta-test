@@ -1,0 +1,22 @@
+{
+  "name": "@insta/backend-contracts",
+  "private": true,
+  "type": "module",
+  "description": "Wire DTOs (zod), business entity types and DB row types for the insta-test API (W01-01).",
+  "exports": {
+    "./wire": "./wire/index.ts",
+    "./domain": "./domain/index.ts",
+    "./rows": "./rows/index.ts"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.8.2"
+  }
+}
