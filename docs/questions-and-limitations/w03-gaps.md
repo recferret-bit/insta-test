@@ -11,10 +11,10 @@
   - Suggested fix: Add "DELETE on self is a 200 no-op" to the Follows behaviour list.
 - [ ] **QL-w03-04** (`F-FE-06`, `frontend`): frontend/02 names only `patchPostInCaches` for optimistic updates; the follow mutation needs profile and user-summary patchers (`patchUserSummariesInCaches`, `patchUserSummaryData` in `state/follows.ts`), which the spec does not name.
   - Suggested fix: Add a profile/user-summary cache-patch helper next to `patchPostInCaches` in frontend/02.
-- [ ] **QL-w03-16**: external-communication/04 lists a FollowCommand that does not exist; the route passes the username inline, as backend/02 describes.
-- [ ] **QL-w03-17**: Follow endpoints return 400 for a username over 30 characters, but the spec's error list for them has no 400.
-- [ ] **QL-w03-18**: Unfollowing yourself returns 200 and does nothing; the spec does not say whether that or 422 is correct.
-- [ ] **QL-w03-19**: frontend/02 names only patchPostInCaches; the profile and user-summary cache patchers the follow button needs are not in the spec.
+- [x] **QL-w03-16**: Duplicate of QL-w03-01 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-01 instead.
+- [x] **QL-w03-17**: Duplicate of QL-w03-02 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-02 instead.
+- [x] **QL-w03-18**: Duplicate of QL-w03-03 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-03 instead.
+- [x] **QL-w03-19**: Duplicate of QL-w03-04 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-04 instead.
 
 ## Issues & Limitations
 - [ ] **QL-w03-05** (`F-INFRA-04`, `infra`): Docker is not available in the validation sandbox, so the slot-3 compose stack (`yd-insta-w03`, web 21060, api 21061) was only rendered, not started. Substitute evidence: a live API run on port 21061 against PostgreSQL 16.13. Two accounts followed each other; the run covered idempotent re-follow with a different case, self-follow 422, 404, anonymous 401, `is_following` on the profile, both lists, unfollow twice, a bad cursor 400, and the notification row removed on unfollow. No passwords appeared in the logs.
@@ -31,18 +31,18 @@
 - [ ] **QL-w03-11** (`F-FE-06`, `frontend`): There is no Playwright E2E suite yet (`apps/web/e2e` is absent; scheduled for w07).
 - [x] **QL-w03-12** (`F-CORE-03`, `specs`): `apps/api/test/unit/mappers/follows.row-mapper.test.ts` (W03-01) failed `npm run format:check`. Fixed in W03-04 with `prettier --write`.
 - [x] **QL-w03-13** (`F-DB-04`, `persistence`): The wave acceptance criteria require `400` integration tests for every endpoint and "re-follow creates exactly one notification"; `PUT`/`DELETE …/follow` had no `400` test and re-follow was not covered. Added 3 tests in W03-04 (`apps/api/test/integration/social/follows.test.ts`).
-- [ ] **QL-w03-20**: No Docker in the sandbox: the slot-3 compose stack was only set up, not started. A live API run on port 21061 was used instead.
-- [ ] **QL-w03-21**: FollowButton and FollowListModal are not shown anywhere until the w05 profile page; only their tests cover them.
-- [ ] **QL-w03-22**: The follow-list query sorts on a millisecond-rounded created_at, so the follows indexes cannot order or page the results; slow for accounts with very many followers.
-- [ ] **QL-w03-23**: .env.wave has no POSTGRES_PASSWORD, so --up fails unless it is exported first.
-- [ ] **QL-w03-24**: .yardos/ is gitignored, so the review packet and compose files are not on the wave branch.
-- [ ] **QL-w03-25**: Integration tests ran on a local PostgreSQL 16.13, not postgres:16-alpine; CI remains the authoritative run.
-- [ ] **QL-w03-26**: There is no Playwright E2E suite yet (planned for w07).
-- [x] **QL-w03-27**: follows.row-mapper.test.ts failed format:check; fixed in W03-04.
-- [x] **QL-w03-28**: Tests for 400 on PUT/DELETE follow and for re-follow creating one notification were missing; added in W03-04.
+- [x] **QL-w03-20**: Duplicate of QL-w03-05 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-05 instead.
+- [x] **QL-w03-21**: Duplicate of QL-w03-06 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-06 instead.
+- [x] **QL-w03-22**: Duplicate of QL-w03-07 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-07 instead.
+- [x] **QL-w03-23**: Duplicate of QL-w03-08 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-08 instead.
+- [x] **QL-w03-24**: Duplicate of QL-w03-09 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-09 instead.
+- [x] **QL-w03-25**: Duplicate of QL-w03-10 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-10 instead.
+- [x] **QL-w03-26**: Duplicate of QL-w03-11 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-11 instead.
+- [x] **QL-w03-27**: Duplicate of QL-w03-12 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-12 instead.
+- [x] **QL-w03-28**: Duplicate of QL-w03-13 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-13 instead.
 
 ## Open Questions
 - [ ] **QL-w03-14** (`F-CORE-01`, `specs`): The W03-04 task lists spec refs `F-BE-05`, `F-ECOMM-07`, but the wave plan (docs/plan/waves/W03-social-graph.md) also covers `F-ECOMM-03` (`is_following`), `F-FE-06` (follow button and lists), `F-CORE-03` and `F-DB-04`, all of which were delivered. Should the task `spec_refs` in WAVE_MANIFEST.json match the wave plan?
 - [ ] **QL-w03-15** (`F-CORE-01`, `specs`): As in QL-w01-03, the `Follow` / `FollowState` entity tests live in `apps/api/test/unit/mappers/follows.entity.test.ts` because there is no `owned_paths` prefix for domain-entity unit tests. Should `apps/api/test/unit/domain/<module>/` be added?
-- [ ] **QL-w03-29**: The task's spec refs list 2 features, but the wave plan covers and delivered 6. Should the manifest match the plan?
-- [ ] **QL-w03-30**: Follow entity tests live under test/unit/mappers because no owned path exists for domain-entity tests. Should one be added?
+- [x] **QL-w03-29**: Duplicate of QL-w03-14 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-14 instead.
+- [x] **QL-w03-30**: Duplicate of QL-w03-15 (short restatement added when the W03-04 review summary was merged); closed in W03-VAL-2 Round 1, track QL-w03-15 instead.

@@ -17,7 +17,27 @@ and include `is_following` for the viewer (`null` for anonymous viewers and for 
 updates the profile, `me` and user-summary caches, and rolls back with a toast on error. `FollowListModal` is a
 route-driven list with infinite scroll; the profile page mounts both in w05.
 
-W03-04 validation (2 iterations) results:
+### Round 1 re-validation (W03-VAL-2, after syncing `main` with w02 in `d24ba53`)
+
+W03-SYNC-1 merged `main` (w02 posts, likes and comments) into the wave. W03-VAL-2 ran every check again on the merged tree:
+
+| Check | Result |
+|---|---|
+| Wave audit (`validate-wave.mjs --require-guide`) | `ok`, no errors or warnings |
+| Spec validation (`validate-specs.mjs`) | `valid: true` |
+| `npm run typecheck` / `npm run lint` / `npm run format:check` | pass |
+| Unit tests (`npm test`) | contracts 47, api 421, web 425, all pass |
+| Integration tests (PostgreSQL 16.13) | 185 / 185 pass in 12 files (social/follows 17) |
+| E2E | none yet (Playwright scheduled for w07) |
+
+Iteration 1 checked the code the merge brought in against the follows code. The merge changed no follows, users or
+notifications source files. `PostService` updates only the author's user row in each transaction, so it cannot
+deadlock with the ascending-id lock order that follows use. Layering, mapper use and file sizes are unchanged, and no
+code defects were found. Iteration 2 found that the ledger held 15 short duplicates (`QL-w03-16..30`) of
+`QL-w03-01..15`, added when the W03-04 review summaries were merged. They are now closed as duplicates and their IDs
+are kept. There are no new open items.
+
+### W03-04 validation (2 iterations) results
 
 | Check | Result |
 |---|---|
@@ -50,14 +70,14 @@ on `PUT`/`DELETE …/follow` and re-follow creating exactly one notification. It
 
 - **Where:** repository root on `wave/w03-social-graph`.
 - **How:** `npm ci && npm run typecheck && npm run lint && npm run format:check && npm test`
-- **Expected:** every command exits 0. Vitest reports contracts 47, api 305 and web 353 tests passed, including `follows.entity`, `follows.row-mapper`, `follow.service`, `social.dto-mapper`, `FollowButton`, `FollowListModal` and `state/follows`.
+- **Expected:** every command exits 0. Vitest reports contracts 47, api 421 and web 425 tests passed, including `follows.entity`, `follows.row-mapper`, `follow.service`, `social.dto-mapper`, `FollowButton`, `FollowListModal` and `state/follows`.
 
 ### Step 2 — Integration tests on PostgreSQL 16 (`F-DB-04`, `F-ECOMM-07`, `F-BE-05`)
 
 - **Where:** repository root, with a disposable PostgreSQL 16 database (it is wiped).
 - **How:** `docker run -d --rm --name w03-pg -e POSTGRES_PASSWORD=pg -p 55432:5432 postgres:16-alpine` then
   `TEST_DATABASE_URL=postgres://postgres:pg@localhost:55432/postgres npm run test:integration`
-- **Expected:** `Test Files 10 passed`, `Tests 134 passed`. `test/integration/social/follows.test.ts` passes 17 tests, including 15 rounds of parallel mutual follow/unfollow with no deadlock, duplicate concurrent follows counted once, and cursor pages with no gaps or duplicates.
+- **Expected:** `Test Files 12 passed`, `Tests 185 passed`. `test/integration/social/follows.test.ts` passes 17 tests, including 15 rounds of parallel mutual follow/unfollow with no deadlock, duplicate concurrent follows counted once, and cursor pages with no gaps or duplicates.
 
 ### Step 3 — Wave audit and spec validation
 
