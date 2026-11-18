@@ -141,6 +141,10 @@ describe("follows API", () => {
       const { rows } = await pool.query("SELECT count(*)::int AS n FROM follows");
       expect(rows[0].n).toBe(0);
     });
+
+    it("over-long username → 400 VALIDATION_FAILED", async () => {
+      expectError(await follow(alice, "a".repeat(31)), 400, "VALIDATION_FAILED");
+    });
   });
 
   describe("DELETE /users/{username}/follow", () => {
@@ -169,6 +173,23 @@ describe("follows API", () => {
     it("unknown user → 404; anonymous → 401", async () => {
       expectError(await unfollow(alice, "nobody"), 404, "NOT_FOUND");
       expectError(await unfollow(null, "bob"), 401, "UNAUTHENTICATED");
+    });
+
+    it("over-long username → 400 VALIDATION_FAILED", async () => {
+      expectError(await unfollow(alice, "a".repeat(31)), 400, "VALIDATION_FAILED");
+    });
+
+    it("re-follow after unfollow creates exactly one notification again", async () => {
+      await follow(alice, "bob");
+      await unfollow(alice, "bob");
+      await flush();
+      events = [];
+      const res = await follow(alice, "bob");
+      expect(res.json()).toMatchObject({ following: true, followers_count: 1 });
+      expect(await followNotifications()).toEqual([{ recipient_id: bob.user.id, actor_id: alice.user.id }]);
+      expect(await counters(bob.user.id)).toEqual({ followers_count: 1, following_count: 0 });
+      await flush();
+      expect(events.map((e) => e.type)).toEqual(["UserFollowed", "NotificationCreated"]);
     });
   });
 

@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  mapFollowEntityToRow,
-  mapFollowRowToEntity,
-} from "../../../src/data/mappers/follows.row-mapper.js";
+import { mapFollowEntityToRow, mapFollowRowToEntity } from "../../../src/data/mappers/follows.row-mapper.js";
 import type { FollowRow } from "../../../src/data/rows/follows.row.js";
 import type { UserId } from "../../../src/domain/shared/ids.js";
 import { Follow } from "../../../src/domain/social/follow.entity.js";
