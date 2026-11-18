@@ -1,0 +1,71 @@
+.upload-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  font-size: var(--text-xs);
+}
+
+.upload-progress__track {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+}
+
+.upload-progress__bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+  transition: width var(--dur-base) var(--ease-out);
+}
+
+.upload-progress__track--indeterminate .upload-progress__bar {
+  width: 35%;
+  animation: upload-progress-slide 1.2s var(--ease-out) infinite;
+}
+
+@keyframes upload-progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+.upload-progress__label {
+  min-width: 3.5ch;
+  text-align: right;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.upload-progress__cancel,
+.upload-progress__retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+}
+
+.upload-progress__retry {
+  padding: 0 var(--space-2);
+  color: var(--color-accent);
+  font-weight: var(--weight-semibold);
+}
+
+.upload-progress__cancel:hover {
+  color: var(--color-text);
+}
+
+.upload-progress__error {
+  flex: 1;
+  color: var(--color-danger-text);
+}
