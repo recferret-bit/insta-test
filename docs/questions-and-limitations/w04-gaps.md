@@ -44,6 +44,14 @@
 - [ ] **QL-w04-25**: StoryTray is not yet placed on HomePage (w05 scope); the viewer and create pages are reached by URL.
 - [ ] **QL-w04-26**: Integration tests ran on embedded PostgreSQL 16.13; there is no Playwright E2E yet (w07), so the web flows are covered by component tests only.
 - [ ] **QL-w04-27**: The api test tsconfig has one type error in w01 identity.test.ts:122; it is not covered by npm run typecheck and does not affect vitest.
+- [ ] **QL-w04-29** (`F-DB-04`, `infra`): In `wave-sync.mjs`, `MIGRATION_FILE_RE` only matches `migrations/`, `db/migrations/` and `prisma/migrations/`, so it never detects collisions in this repo's `apps/api/migrations/`. W04-SYNC-1 had no collision (neither side added a migration since merge-base `af94d81`), which was checked by hand.
+  - Suggested fix: Match `(?:.*/)?migrations/NNNN_*.sql`, or make the directory configurable.
+- [ ] **QL-w04-30** (`F-INFRA-04`, `infra`): `wave-sync.mjs` has no `--help`, ignores unknown flags and defaults to `--wave w01`. A bare `--help` ran a real sync and created a local `wave/w01-backend-and-persistence` ref; it was not pushed and was deleted at once.
+  - Suggested fix: Make `--wave` required and reject unknown flags.
+- [ ] **QL-w04-31** (`F-INFRA-04`, `infra`): `--sync-issues` only looks at local `refs/heads/issue/WNN-*`, so issue branches that exist only on the remote are skipped without a message. For w04, `issue/W04-02` and `issue/W04-03` are already fully merged into the wave (0 commits ahead), so nothing needed to be propagated.
+  - Suggested fix: Also look at `<remote>/issue/WNN-*`, and skip branches that are already merged.
+- [ ] **QL-w04-32** (`F-INFRA-04`, `infra`): In the sandbox, running `npm ci` as the `--test-cmd` gate fails in the `/tmp` sync worktree (argon2 install script exits 126, so `/tmp` is likely noexec). The gate passed after symlinking `node_modules` from the job worktree into the sync worktree. Also, `git push` has no credentials, so the synced `wave/w04-stories` (`170de32`) exists only locally and on the job branch.
+  - Suggested fix: Create the sync worktree under the repo or `$TMPDIR` with exec rights, and have the orchestrator push the wave ref.
 
 ## Open Questions
 - [ ] **QL-w04-14** (`F-CORE-01`, `specs`): A 2026-11-18 planning note says w04 was cancelled after w01 failed, but w01 landed in `f94739b` and W04-01..W04-03 are merged into `wave/w04-stories`. Is w04 active and cleared to land?
