@@ -76,6 +76,16 @@ describe("LikeService (F-BE-04)", () => {
       expect(uow.published.map((e) => e.type)).toEqual(["PostLiked", "PostCountersChanged"]);
     });
 
+    it("a failure after events were collected rolls back and publishes nothing", async () => {
+      notifications.insertIfAbsent = async () => {
+        throw new Error("boom");
+      };
+      await expect(service.like(POST, BOB)).rejects.toThrow("boom");
+      expect(likes.rows.size).toBe(0);
+      expect(posts.rows.get(POST)!.likeCount).toBe(3);
+      expect(uow.published).toEqual([]);
+    });
+
     it("locks the post inside the transaction", async () => {
       await service.like(POST, BOB);
       expect(posts.findLiveTx[0]).toBeDefined();

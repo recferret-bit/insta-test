@@ -55,6 +55,16 @@ describe("CommentService (F-BE-04)", () => {
       ]);
     });
 
+    it("a failure after events were collected rolls back and publishes nothing", async () => {
+      notifications.insertIfAbsent = async () => {
+        throw new Error("boom");
+      };
+      await expect(add()).rejects.toThrow("boom");
+      expect(comments.rows.size).toBe(0);
+      expect(posts.rows.get(POST)!.commentCount).toBe(1);
+      expect(uow.published).toEqual([]);
+    });
+
     it("self-comment creates no notification (INV-08)", async () => {
       await add("mine", ALICE);
       expect(notifications.rows.size).toBe(0);

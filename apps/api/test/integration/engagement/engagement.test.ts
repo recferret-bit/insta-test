@@ -94,6 +94,41 @@ describe("likes & comments API", () => {
     ).rows;
   const softDeletePost = () => pool.query("UPDATE posts SET deleted_at = now() WHERE id = $1", [post.id]);
 
+  describe("INV-05 counters", () => {
+    it("like_count / comment_count equal the live source rows after mixed like/comment traffic", async () => {
+      const { post: other } = await insertPostWithMedia(pool, { author_id: bob.user.id });
+      const ok = (res: { statusCode: number }) => expect(res.statusCode).toBeLessThan(300);
+      for (const who of [alice, bob, carol]) ok(await req("PUT", `/posts/${pst(post.id)}/like`, who));
+      ok(await req("PUT", `/posts/${pst(post.id)}/like`, bob)); // idempotent
+      ok(await req("DELETE", `/posts/${pst(post.id)}/like`, carol));
+      ok(await req("DELETE", `/posts/${pst(post.id)}/like`, carol)); // no-op
+      ok(await req("PUT", `/posts/${pst(other.id)}/like`, alice));
+      const added = [];
+      for (const [who, target] of [
+        [bob, post],
+        [carol, post],
+        [alice, post],
+        [alice, other],
+      ] as const) {
+        const res = await req("POST", `/posts/${pst(target.id)}/comments`, who, { text: "hi" });
+        ok(res);
+        added.push(CommentResponseDto.parse(res.json()));
+      }
+      ok(await req("DELETE", `/comments/${added[0]!.id}`, alice)); // post author removes bob's comment
+      ok(await req("DELETE", `/comments/${added[3]!.id}`, alice)); // comment author on bob's post
+
+      const { rows } = await pool.query<{ ok: boolean }>(
+        `SELECT p.like_count = (SELECT count(*) FROM post_likes l WHERE l.post_id = p.id)
+                AND p.comment_count = (SELECT count(*) FROM comments c
+                                        WHERE c.post_id = p.id AND c.deleted_at IS NULL) AS ok
+           FROM posts p`,
+      );
+      expect(rows.map((r) => r.ok)).toEqual([true, true]);
+      expect(await counters(post.id)).toEqual({ like_count: 2, comment_count: 2 });
+      expect(await counters(other.id)).toEqual({ like_count: 1, comment_count: 0 });
+    });
+  });
+
   describe("PUT/DELETE /posts/{id}/like", () => {
     it("like → 200, like_count +1, one like notification for the author, events published", async () => {
       const res = await req("PUT", `/posts/${pst(post.id)}/like`, bob);
