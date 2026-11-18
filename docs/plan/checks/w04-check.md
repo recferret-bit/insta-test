@@ -18,7 +18,25 @@ and the `state/stories*` hooks are in place. The viewer has segmented progress (
 tap zones, `←/→`, `Esc`, hold/space pause, auto-advance through the tray, seen marks with optimistic tray updates, and a
 "Seen by N" sheet for the author.
 
-W04-04 validation (2 iterations) results:
+**Round 1 (W04-VAL-2, after W04-SYNC-1 merged the refreshed `main` `1c2510e` with w02 landed).** The branch was checked
+again at `f32f22e`. The wave diff against `main` is 36 files, all inside the w04 `owned_paths`. The w02 merge did not
+break anything in w04. Posts and stories both use `MediaAsset.assertAttachable`, and each rejects the other's media
+purpose, which is tested on both sides. The `/create` → `/create/story` link and the `/create/story` and
+`/stories/:username` routes are still in place. No code defects were found, so no code changed in this round.
+The ledger had 14 entries written twice (QL-w04-15..28). They are now closed as duplicates of QL-w04-01..14. One new
+tooling issue was recorded as QL-w04-33.
+
+| Check (round 1, `f32f22e`) | Result |
+|---|---|
+| Wave audit (`validate-wave.mjs --require-guide`) | `ok`, no errors or warnings |
+| Spec validator (`validate-specs.mjs`) | `"valid": true` |
+| `npm run typecheck` / eslint / prettier | pass |
+| Unit tests (`npm test`) | contracts 47, api 442, web 449 (938), all pass |
+| Integration tests (PostgreSQL 16.13, embedded) | 12 files, 188 / 188 pass (stories 20) |
+| E2E | none yet (Playwright scheduled for w07) |
+| Compose preview slot 4 | not started; no Docker in the sandbox (QL-w04-07) |
+
+W04-04 validation (2 iterations, before the sync) results:
 
 | Check | Result |
 |---|---|
@@ -54,14 +72,14 @@ and is recorded. Iteration 2 wrote this guide and the ledger below.
 
 - **Where:** repository root on `wave/w04-stories`.
 - **How:** `npm ci && npm run typecheck && npm run lint && npm run format:check && npm test`
-- **Expected:** every command exits 0; vitest reports contracts 47, api 326 and web 377 tests passed (the web count includes progress timing, keyboard navigation and pause tests with fake timers).
+- **Expected:** every command exits 0; vitest reports contracts 47, api 442 and web 449 tests passed (the web count includes progress timing, keyboard navigation and pause tests with fake timers).
 
 ### Step 2 — Integration tests on PostgreSQL 16 (`F-DB-04`, `F-ECOMM-08`, `F-BE-06`, `F-BE-09`)
 
 - **Where:** repository root, with a disposable PostgreSQL 16 database (it is wiped).
 - **How:** `docker run -d --rm --name w04-pg -e POSTGRES_PASSWORD=pg -p 55432:5432 postgres:16-alpine` then
   `TEST_DATABASE_URL=postgres://postgres:pg@localhost:55432/postgres npm run test:integration`
-- **Expected:** `Test Files 10 passed`, `Tests 137 passed`. `test/integration/stories/stories.test.ts` (20 tests) covers happy path, `400`, `401`, `403`, `404` and `422 MEDIA_INVALID` per endpoint. It also covers expiry at exactly `created_at + 24h` on every endpoint, tray ordering, idempotent seen, keyset viewer pagination, and the cleanup job (including the skip while another session holds the lock).
+- **Expected:** `Test Files 12 passed`, `Tests 188 passed`. `test/integration/stories/stories.test.ts` (20 tests) covers happy path, `400`, `401`, `403`, `404` and `422 MEDIA_INVALID` per endpoint. It also covers expiry at exactly `created_at + 24h` on every endpoint, tray ordering, idempotent seen, keyset viewer pagination, and the cleanup job (including the skip while another session holds the lock).
 
 ### Step 3 — Wave audit and spec validation
 
@@ -161,3 +179,8 @@ and is recorded. Iteration 2 wrote this guide and the ledger below.
 - [ ] **QL-w04-12** (`F-DB-04`, `infra`): There is no Docker or system Postgres in the sandbox; integration tests ran on embedded PostgreSQL 16.13. There is no Playwright E2E suite yet (scheduled for w07), so the story viewer, tray and create flows are covered only by component tests with a mocked API and fake timers.
 - [ ] **QL-w04-13** (`F-CORE-03`, `infra`): `tsc -p apps/api/test/tsconfig.json` reports one error in a w01 file (`apps/api/test/integration/identity/identity.test.ts:122`, `password_hash` on a possibly-undefined row). Vitest is not affected and `npm run typecheck` does not include the test tsconfig, so this does not block CI; no w04 test file has type errors.
 - [ ] **QL-w04-14** (`F-CORE-01`, `specs`): A 2026-11-18 planning note says w04 was cancelled after w01 failed, but w01 landed in `f94739b` and W04-01..W04-03 are merged into `wave/w04-stories`. Is w04 active and cleared to land?
+- [ ] **QL-w04-29** (`F-DB-04`, `infra`): In `wave-sync.mjs`, `MIGRATION_FILE_RE` only matches `migrations/`, `db/migrations/` and `prisma/migrations/`, so it never detects collisions in this repo's `apps/api/migrations/`. W04-SYNC-1 had no collision (neither side added a migration since merge-base `af94d81`), which was checked by hand.
+- [ ] **QL-w04-30** (`F-INFRA-04`, `infra`): `wave-sync.mjs` has no `--help`, ignores unknown flags and defaults to `--wave w01`. A bare `--help` ran a real sync and created a local `wave/w01-backend-and-persistence` ref; it was not pushed and was deleted at once.
+- [ ] **QL-w04-31** (`F-INFRA-04`, `infra`): `--sync-issues` only looks at local `refs/heads/issue/WNN-*`, so issue branches that exist only on the remote are skipped without a message. For w04, `issue/W04-02` and `issue/W04-03` are already fully merged into the wave (0 commits ahead), so nothing needed to be propagated.
+- [ ] **QL-w04-32** (`F-INFRA-04`, `infra`): In the sandbox, running `npm ci` as the `--test-cmd` gate fails in the `/tmp` sync worktree (argon2 install script exits 126, so `/tmp` is likely noexec). The gate passed after symlinking `node_modules` from the job worktree into the sync worktree. Also, `git push` has no credentials, so the synced `wave/w04-stories` (`170de32`) exists only locally and on the job branch. Update (W04-VAL-2 round 1): `origin/wave/w04-stories` now points at `f32f22e`, which contains `170de32`, so the push part is resolved; the `/tmp` noexec part stays open.
+- [ ] **QL-w04-33** (`F-INFRA-04`, `infra`): `validate-wave.mjs` reports `files_changed_count` as the number of all source files (476) when the worktree is clean, because it counts `git status --porcelain` lines and falls back to every file. The real wave diff against the refreshed `main` (`1c2510e`) is 36 files, all inside the w04 `owned_paths`.
