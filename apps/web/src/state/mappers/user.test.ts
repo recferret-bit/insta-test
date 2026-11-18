@@ -90,3 +90,76 @@ describe("user mappers", () => {
     });
   });
 });
+
+describe("user mappers — W01-01 coverage (compact counts, initials fallback)", () => {
+  const svgOf = (dataUrl: string) => decodeURIComponent(dataUrl.slice(dataUrl.indexOf(",") + 1));
+
+  it("initials avatar uses up to two full-name initials, else the username initial", () => {
+    const withName = toUserSummaryVM(userSummary({ full_name: "alice pleasance liddell", avatar_url: null }));
+    expect(svgOf(withName.avatarUrl)).toContain(">AP</text>");
+    const noName = toUserSummaryVM(userSummary({ full_name: "   ", avatar_url: null }));
+    expect(noName.displayName).toBe("alice");
+    expect(svgOf(noName.avatarUrl)).toContain(">A</text>");
+  });
+
+  it("initials avatar is deterministic per user and escapes markup", () => {
+    const a = toUserSummaryVM(userSummary({ avatar_url: null }));
+    const b = toUserSummaryVM(userSummary({ avatar_url: null }));
+    expect(a.avatarUrl).toBe(b.avatarUrl);
+    const odd = toUserSummaryVM(userSummary({ full_name: "<b> &", avatar_url: null }));
+    expect(svgOf(odd.avatarUrl)).not.toContain("<b>");
+  });
+
+  it("profile and me fall back to the initials avatar too", () => {
+    const vm = toProfileVM(profile({ avatar_url: null }), null);
+    expect(vm.hasCustomAvatar).toBe(false);
+    expect(vm.avatarUrl.startsWith("data:image/svg+xml")).toBe(true);
+    expect(toMeVM(me({ avatar_url: null })).hasCustomAvatar).toBe(false);
+  });
+
+  it.each([
+    [0, 0, 0, { posts: "0", followers: "0", following: "0" }, "0 posts, 0 followers, 0 following"],
+    [1, 1, 1, { posts: "1", followers: "1", following: "1" }, "1 post, 1 follower, 1 following"],
+    [
+      999,
+      1000,
+      1_500_000,
+      { posts: "999", followers: "1K", following: "1.5M" },
+      "999 posts, 1K followers, 1.5M following",
+    ],
+    [
+      12_345,
+      2_000_000_000,
+      10_050,
+      { posts: "12.3K", followers: "2B", following: "10.1K" },
+      "12.3K posts, 2B followers, 10.1K following",
+    ],
+  ])("compact counters for %i/%i/%i", (posts, followers, following, label, summary) => {
+    const vm = toProfileVM(
+      profile({ posts_count: posts, followers_count: followers, following_count: following }),
+      null,
+    );
+    expect(vm.countsLabel).toEqual(label);
+    expect(vm.countsSummary).toBe(summary);
+    expect(vm).toMatchObject({ postsCount: posts, followersCount: followers, followingCount: following });
+  });
+
+  it("maps every profile field and URL-encodes the profile path", () => {
+    const vm = toProfileVM(profile({ is_following: false, has_active_story: false }), hexId("usr", 2));
+    expect(vm).toMatchObject({
+      id: hexId("usr", 1),
+      username: "alice",
+      fullName: "Alice Liddell",
+      displayName: "Alice Liddell",
+      bio: "Down the rabbit hole",
+      avatarUrl: "http://api.test/media/2026/11/a.jpg",
+      hasCustomAvatar: true,
+      isFollowing: false,
+      hasActiveStory: false,
+      isSelf: false,
+      profilePath: "/u/alice",
+      createdAt: "2026-01-01T00:00:00.000Z",
+    });
+    expect(toUserSummaryVM(userSummary({ username: "a.b_c" })).profilePath).toBe("/u/a.b_c");
+  });
+});
