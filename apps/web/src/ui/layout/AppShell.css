@@ -1,0 +1,221 @@
+/* App shell — frontend/03-design-system.md#responsive-breakpoints: sm 0 (tab bar), md 768 (icon sidebar), lg 1264 (labels). */
+.shell {
+  min-height: 100vh;
+  padding-top: var(--topbar-height);
+  padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
+}
+
+.shell__main {
+  min-height: calc(100vh - var(--topbar-height) - var(--tabbar-height));
+}
+
+.shell__main:focus {
+  outline: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+
+/* ---- mobile top bar & bottom tab bar ---- */
+.shell__topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.shell__topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.icon-button:hover {
+  background: var(--color-hover);
+  text-decoration: none;
+}
+
+.shell__tabbar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 50;
+  height: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.tab-list {
+  display: flex;
+  height: var(--tabbar-height);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tab-list > li {
+  flex: 1;
+}
+
+.tab-list .nav-link {
+  justify-content: center;
+  height: 100%;
+}
+
+.tab-list .nav-label {
+  display: none;
+}
+
+/* ---- nav entries (shared) ---- */
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--text-md);
+  text-align: left;
+  width: 100%;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.nav-link:hover {
+  background: var(--color-hover);
+  text-decoration: none;
+}
+
+.nav-link--active {
+  font-weight: var(--weight-bold);
+}
+
+.nav-link--active .nav-glyph svg {
+  stroke-width: 2.6;
+}
+
+.nav-glyph {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.nav-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--color-bg);
+  border-radius: var(--radius-full);
+  background: var(--color-like);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  line-height: 14px;
+  text-align: center;
+}
+
+/* ---- desktop sidebar ---- */
+.shell__sidebar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding: 0 0 0 var(--sidebar-compact);
+  }
+
+  .shell__main {
+    min-height: 100vh;
+  }
+
+  .shell__topbar,
+  .shell__tabbar {
+    display: none;
+  }
+
+  .shell__sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    width: var(--sidebar-compact);
+    padding: var(--space-6) var(--space-3) var(--space-4);
+    border-right: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+
+  .shell__sidebar nav {
+    flex: 1;
+  }
+
+  .shell__brand {
+    padding: 0 var(--space-3);
+  }
+
+  .shell__brand .brand__name,
+  .shell__sidebar .nav-label {
+    display: none;
+  }
+}
+
+@media (min-width: 1264px) {
+  .shell {
+    padding-left: var(--sidebar-full);
+  }
+
+  .shell__sidebar {
+    width: var(--sidebar-full);
+  }
+
+  .shell__brand .brand__name {
+    display: inline;
+  }
+
+  .shell__sidebar .nav-label {
+    display: inline;
+  }
+}
