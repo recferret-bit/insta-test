@@ -1,0 +1,36 @@
+.caption {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.caption--clamped .caption__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.caption__author {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.caption__link {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.caption__author:hover,
+.caption__link:hover {
+  text-decoration: underline;
+}
+
+.caption__more {
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: inherit;
+}
