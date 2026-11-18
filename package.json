@@ -13,8 +13,25 @@
   "scripts": {
     "validate:specs": "node .agents/skills/spec-architect/scripts/validate-specs.mjs --root . --json",
     "build": "npm run build --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b packages/contracts apps/api apps/web",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "test:integration": "npm run test:integration -w apps/api",
+    "dev": "npm run build -w packages/contracts && concurrently -n api,web -c blue,magenta \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "e2e": "npm run e2e -w apps/web"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.20.0",
+    "concurrently": "^9.2.0",
+    "eslint": "^9.39.0",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^15.15.0",
+    "prettier": "^3.6.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
   }
 }
