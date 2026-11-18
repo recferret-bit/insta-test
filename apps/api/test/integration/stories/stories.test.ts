@@ -317,6 +317,19 @@ describe("stories API", () => {
       await rm(t.env.MEDIA_DIR, { recursive: true, force: true });
       expect((await del(s.id, alice.headers)).statusCode).toBe(204);
     });
+
+    it("401 anonymous (story kept), 400 malformed id, 404 unknown id", async () => {
+      const s = await story(alice);
+      expectError(await del(s.id, {}), 401, "UNAUTHENTICATED");
+      expect((await pool.query("SELECT 1 FROM stories WHERE id = $1", [s.id])).rowCount).toBe(1);
+      const bad = await t.app.inject({
+        method: "DELETE",
+        url: "/api/v1/stories/not-a-story-id",
+        headers: alice.headers,
+      });
+      expectError(bad, 400, "VALIDATION_FAILED");
+      expectError(await del("00000000-0000-7000-8000-000000000000", alice.headers), 404, "NOT_FOUND");
+    });
   });
 
   describe("expiry invisibility (INV-06)", () => {
