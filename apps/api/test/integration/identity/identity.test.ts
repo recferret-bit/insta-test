@@ -101,6 +101,34 @@ describe("identity API", () => {
       expect(me.statusCode).toBe(200);
     });
 
+    it("INV-09: password, password hash and raw token never leak outside the signup/login token", async () => {
+      const signup = await t.app.inject({ method: "POST", url: "/api/v1/auth/signup", payload: body });
+      const token = AuthTokenResponseDto.parse(signup.json()).access_token;
+      const login = await t.app.inject({
+        method: "POST",
+        url: "/api/v1/auth/login",
+        payload: { login: body.email, password: body.password },
+      });
+      const headers = { authorization: `Bearer ${token}` };
+      const me = await t.app.inject({ url: "/api/v1/me", headers });
+      const patched = await t.app.inject({
+        method: "PATCH",
+        url: "/api/v1/me",
+        headers,
+        payload: { bio: "hi" },
+      });
+      const profile = await t.app.inject({ url: "/api/v1/users/alice_1", headers });
+      const {
+        rows: [{ password_hash: hash }],
+      } = await pool.query<{ password_hash: string }>("SELECT password_hash FROM users");
+      for (const res of [signup, login, me, patched, profile]) {
+        expect(res.body).not.toContain(body.password);
+        expect(res.body).not.toContain(hash);
+        expect(res.body).not.toMatch(/password|token_hash/i);
+      }
+      for (const res of [me, patched, profile]) expect(res.body).not.toContain(token);
+    });
+
     it("400 on invalid body, reserved username or unknown fields", async () => {
       for (const payload of [
         { ...body, password: "short" },

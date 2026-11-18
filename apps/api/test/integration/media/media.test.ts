@@ -125,6 +125,17 @@ describe("media API", () => {
       });
     });
 
+    it("201 PNG renamed to .mp4 is stored as image/png (filename and Content-Type ignored)", async () => {
+      const res = await upload([
+        { name: "purpose", value: "post" },
+        { name: "file", filename: "clip.mp4", data: png(32, 16), contentType: "video/mp4" },
+      ]);
+      expect(res.statusCode).toBe(201);
+      const dto = MediaResponseDto.parse(res.json());
+      expect(dto).toMatchObject({ kind: "image", mime_type: "image/png", width: 32, height: 16 });
+      expect(dto.url).toMatch(/\.png$/);
+    });
+
     it("201 WebP", async () => {
       const res = await upload([{ name: "purpose", value: "story" }, file(webp(1080, 1920))]);
       expect(res.statusCode).toBe(201);
