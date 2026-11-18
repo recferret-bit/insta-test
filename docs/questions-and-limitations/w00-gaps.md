@@ -38,6 +38,8 @@
 - [x] **QL-w00-23**: ESLint import/no-restricted-paths depended on cwd; fixed with basePath plus the layer-boundaries regression test.
 - [ ] **QL-w00-24**: Integration tests ran against PGlite, not PostgreSQL 16; the CI run on postgres:16-alpine is authoritative.
 - [ ] **QL-w00-25**: No E2E specs until w07 (P-4: apps/web/e2e/).
+- [ ] **QL-w00-26** (`F-INFRA-07`, `persistence`): During W00-LAND-R1 the integration suite ran 40/41 against PGlite (0.3.15 and 0.5.16 via `@electric-sql/pglite-socket`), not the 41/41 that the check guide reports. `startup.test.ts` "runJobOnce holds a real advisory lock…" fails because the PGlite socket server accepts only one connection at a time: the job holds a pooled client, and the test's second `pool.query` times out, so the job returns `failed`. This is a test-environment limit, not a code defect.
+  - Suggested fix: Treat the CI integration job on `postgres:16-alpine` as the gate (see QL-w00-11/24); optionally skip this one test when the test DB is PGlite.
 
 ## Open Questions
 - [ ] **QL-w00-13** (`F-INFRA-04`, `infra`): Which wave port scheme is canonical: infra/01 (`18000 + NN*10`) or the deploy skill (`21000 + slot*20`)?
