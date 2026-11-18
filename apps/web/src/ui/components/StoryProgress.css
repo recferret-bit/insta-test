@@ -1,0 +1,19 @@
+.story-progress {
+  display: flex;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+.story-progress__segment {
+  flex: 1 1 0;
+  height: 3px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: rgb(255 255 255 / 0.35);
+}
+
+.story-progress__fill {
+  display: block;
+  height: 100%;
+  background: #ffffff;
+}
