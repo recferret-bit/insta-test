@@ -29,6 +29,23 @@ describe("story mappers", () => {
     );
   });
 
+  it("remainingLabel counts down to minutes and then expired", () => {
+    const expires = new Date("2026-11-18T11:00:00.000Z").getTime();
+    const before = (ms: number) => new Date(expires - ms);
+    expect(toStoryVM(story(), before(60 * 60 * 1000)).remainingLabel).toBe("1h left");
+    expect(toStoryVM(story(), before(59 * 60 * 1000)).remainingLabel).toBe("59m left");
+    expect(toStoryVM(story(), before(30 * 1000)).remainingLabel).toBe("<1m left");
+    expect(toStoryVM(story(), before(0)).remainingLabel).toBe("expired");
+  });
+
+  it("an image ignores duration_ms; flags pass through", () => {
+    const dto = story({ media: media({ kind: "image", duration_ms: 9_000 }), viewer_has_seen: true });
+    const vm = toStoryVM(dto, NOW);
+    expect(vm.durationMs).toBe(STORY_IMAGE_DURATION_MS);
+    expect(vm).toMatchObject({ id: hexId("sty", 1), viewerHasSeen: true, viewCount: null });
+    expect(toStoryVM(story({ view_count: 0 }), NOW).viewCountLabel).toBe("Seen by 0");
+  });
+
   it("tray item ring state and href", () => {
     expect(toStoryTrayItemVM(trayItem())).toMatchObject({
       ringState: "unseen",
